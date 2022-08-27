@@ -149,7 +149,8 @@ export default defineComponent({
       }
       if (status == "close") return "close.png";
       if (status == "flag") return "flag.png";
-      if (value == -1) return "mine.png";
+      if (value == -1) return "boom.png";
+
       return `count${value}.png`;
     },
 
@@ -199,10 +200,6 @@ export default defineComponent({
 });
 </script>
 <style scoped>
-.bg {
-  background-image: url(../../static/sprite150.gif);
-}
-
 .digit {
   width: 36rpx;
   height: 63rpx;

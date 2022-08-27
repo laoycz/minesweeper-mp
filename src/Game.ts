@@ -52,14 +52,16 @@ class Game {
 
     const strip = this.zone.matrix.flat();
     if (
-      strip.filter((a) => a[0] != -1).filter((a) => a[1] != "close").length == 0
+      strip.filter((a) => a[0] != -1).filter((a) => a[1] != "open").length == 0
     ) {
       this.win();
     }
   }
 
   flag([x, y]: [number, number]) {
+    if (this.status != "play") return;
     const [number, status] = this.zone.get([x, y]);
+
     if (status == "open") return this.open([x, y]);
     if (status == "close") {
       return this.zone.set([x, y], [number, "flag"]);
