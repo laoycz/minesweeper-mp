@@ -3,9 +3,10 @@
     style="
       display: grid;
       grid-template-columns: 27rpx auto 27rpx;
-      grid-auto-rows: 27rpx 81rpx 27rpx auto 87rpx 27rpx;
+      grid-template-rows: 27rpx 81rpx 27rpx auto 87rpx 27rpx;
       justify-content: center;
       width: 750rpx;
+      height: 99vh;
     "
   >
     <image src="/static/bordertl.png" class="full"></image>
@@ -71,47 +72,66 @@
       ></image>
     </view>
     <image src="/static/borderjointr.png" class="full"></image>
-    <view>
-      <image
-        src="/static/borderlr.png"
-        class="borderlr"
-        v-for="n in 30"
-        :key="n"
-      ></image>
-    </view>
+    <image
+      src="/static/borderlr.png"
+      style="width: 27rpx; height: 100%"
+    ></image>
 
-    <view class="zone">
-      <view v-for="(row, i) in zone" :key="i" style="display: contents">
-        <image
-          v-for="(cell, j) in row"
-          :key="j"
-          :src="`/static/${getCellImage(cell)}`"
-          @click="open([j, i])"
-          class="full"
-        >
-        </image>
-      </view>
-    </view>
+    <movable-area style="width: 100%; height: 100%; overflow: hidden">
+      <movable-view
+        direction="all"
+        class="zone"
+        scale
+        :scale-value="scale ? 1.6 : 1"
+      >
+        <view v-for="(row, i) in zone" :key="i" style="display: contents">
+          <image
+            v-for="(cell, j) in row"
+            :key="j"
+            :src="`/static/${getCellImage(cell)}`"
+            @click="open([j, i])"
+            class="full"
+          >
+          </image>
+        </view>
+      </movable-view>
+    </movable-area>
 
-    <view>
-      <image
-        src="/static/borderlr.png"
-        class="borderlr"
-        v-for="n in 30"
-        :key="n"
-      ></image>
-    </view>
+    <image
+      src="/static/borderlr.png"
+      style="width: 27rpx; height: 100%"
+    ></image>
     <image src="/static/borderlr2.png" class="full"></image>
     <view
       style="
         background-color: silver;
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;
+        padding: 12rpx;
+        gap: 16rpx;
       "
     >
-      <button @click="setFlag(false)" class="button">Open</button>
-      <button @click="setFlag(true)" class="button">Flag</button>
-      <button class="button">Zoom</button>
+      <button
+        @click="setFlag(false)"
+        class="button"
+        :style="buttonShadow(flag == false)"
+      >
+        Open
+      </button>
+      <button
+        @click="setFlag(true)"
+        class="button"
+        :style="buttonShadow(flag == true)"
+      >
+        Flag
+      </button>
+      <button
+        class="button"
+        @click="setScale(!scale)"
+        :style="buttonShadow(scale)"
+      >
+        Zoom
+      </button>
     </view>
     <image src="/static/borderlr2.png" class="full"></image>
     <image src="/static/borderbl.png" class="full"></image>
@@ -138,7 +158,7 @@ import type { status as GameStatus } from "../../Game";
 export default defineComponent({
   data() {
     const game = new Game();
-    return { zone: game.zone.matrix, game, time: 0, flag: false };
+    return { zone: game.zone.matrix, game, time: 0, flag: false, scale: false };
   },
 
   methods: {
@@ -166,6 +186,10 @@ export default defineComponent({
       this.flag = flag;
     },
 
+    setScale(scale: boolean) {
+      this.scale = scale;
+    },
+
     newGame() {
       this.game = new Game();
       this.zone = this.game.zone.matrix;
@@ -175,6 +199,14 @@ export default defineComponent({
     tick() {
       if (this.game.status == "play") {
         this.time = this.time + 1;
+      }
+    },
+
+    buttonShadow(active: boolean): StyleValue {
+      if (active) {
+        return { boxShadow: "inset 8rpx 8rpx 8rpx 0" };
+      } else {
+        return { boxShadow: "8rpx 8rpx 8rpx 0" };
       }
     },
   },
@@ -216,6 +248,8 @@ export default defineComponent({
   grid-template-columns: repeat(16, 43rpx);
   grid-auto-rows: 43rpx;
   justify-content: start;
+  width: auto;
+  height: auto;
 }
 
 .bordertb {
@@ -237,7 +271,6 @@ export default defineComponent({
 .button {
   background-color: silver;
   margin: 0;
-  border: 2rpx solid gray;
   display: flex;
   align-items: center;
   justify-content: center;
